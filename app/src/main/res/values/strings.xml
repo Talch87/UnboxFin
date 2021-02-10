@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">UnboxFin</string>
+    <string name="reset">Reset</string>
+    <string name="select_a_ticker">Select a Ticker</string>
+    <string name="confirm">CONFIRM</string>
+    <string name="next">NEXT</string>
+    <string name="how_old_are_you">How old are you?</string>
+</resources>
