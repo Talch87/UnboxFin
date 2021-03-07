@@ -3,6 +3,7 @@ package com.emavale.unboxfin;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.icu.text.UnicodeSet;
 import android.os.Build;
@@ -21,6 +22,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
 
 import org.json.JSONArray;
@@ -46,9 +50,12 @@ public class TickerDetails extends AppCompatActivity {
     public String revenues;
     public String ebitda;
     public LineChart price_chart;
-    public String prices_api_token;
+    public List<Entry> prices_entries;
+    public JSONArray timestamps;
+    public JSONArray close_prices;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,15 +66,20 @@ public class TickerDetails extends AppCompatActivity {
         tickeronly = findViewById(R.id.Details_ticker_only);
         details_sales = findViewById(R.id.Details_Revenues);
         details_ebitda = findViewById(R.id.Details_EBITDA);
-        prices_api_token = "6043dde5179441.94270114";
+
+
+
+
+        ticker = selected_ticker.substring(0, selected_ticker.indexOf("-") - 1);
+        tickerlabel.setText(selected_ticker);
+        tickeronly.setText(ticker);
+        YahooTickerData(ticker);
+
 
         //Price CHART
         price_chart = findViewById(R.id.price_chart);
+        UpdatePriceChart(ticker,"1d","1y"); //update price chart
 
-
-        String ticker = selected_ticker.substring(0, selected_ticker.indexOf("-") - 1);
-        tickeronly.setText(ticker);
-        YahooTickerData(ticker);
 
 
 
@@ -100,6 +112,7 @@ public class TickerDetails extends AppCompatActivity {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("x-rapidapi-key", "e0be66ae65mshf978aea8cd09be1p152050jsnfc62bd35e202");
                 headers.put("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com");
+                headers.put("useQueryString", "true");
                 return headers;
             }
 
@@ -113,17 +126,49 @@ public class TickerDetails extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void downloadPricesJson(String game_type, String timeframe) {
-        String first_date = getCalculatedDate("dd-MM-yyyy", -1825);
-        String last_date = getCalculatedDate("dd-MM-yyyy", -1);
+    public void UpdatePriceChart(String ticker, String interval, String range) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = "https://eodhistoricaldata.com/api/eod/MCD.US?api_token=OeAFFmMliFG5orCUuwAKQ8l4WWFQ67YX&period=d&order=a&from="+first_date+"&to="+last_date;
+        String url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-chart?interval="+interval+"&symbol="+ticker+"&range="+range+"&region=US";
+        prices_entries = new ArrayList<>();
         try {
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     response -> {
                         try {
                             JSONObject response_obj = new JSONObject(response);
-                            revenues = response_obj.getJSONObject("financialData").getJSONObject("totalRevenue").getString("fmt");
+
+                            timestamps = response_obj
+                                    .getJSONObject("chart")
+                                    .getJSONArray("result")
+                                    .getJSONObject(0)
+                                    .getJSONArray("timestamp");
+
+                            close_prices = response_obj
+                                    .getJSONObject("chart")
+                                    .getJSONArray("result")
+                                    .getJSONObject(0)
+                                    .getJSONObject("indicators")
+                                    .getJSONArray("quote")
+                                    .getJSONObject(0)
+                                    .getJSONArray("close");
+
+                            for (int i=0; i<timestamps.length(); i++) {
+
+                                try {
+                                    prices_entries.add(new Entry(i+1, (float) close_prices.getDouble(i)));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                            Log.d("prices entries", prices_entries.toString());
+                            LineDataSet dataSet = new LineDataSet(prices_entries, "Price");
+                            dataSet.setColor(Color.RED);
+                            dataSet.setValueTextColor(Color.BLACK);
+                            LineData lineData = new LineData(dataSet);
+                            Log.d("linedata:", dataSet.toString());
+                            price_chart.setData(lineData);
+                            price_chart.invalidate();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } }, error -> {
@@ -134,17 +179,11 @@ public class TickerDetails extends AppCompatActivity {
                     HashMap<String, String> headers = new HashMap<String, String>();
                     headers.put("x-rapidapi-key", "e0be66ae65mshf978aea8cd09be1p152050jsnfc62bd35e202");
                     headers.put("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com");
+                    headers.put("useQueryString", "true");
                     return headers;
                 };
 
-                public Map<String, String> getParams() throws AuthFailureError {
-                    HashMap<String, String> params = new HashMap<String, String>();
-                    params.put("interval", "1d");
-                    params.put("symbol", "AMRN");
-                    params.put("range", "1y");
-                    params.put("region", "US");
-                    return params;
-                };
+
             };
 
             queue.add(stringRequest);

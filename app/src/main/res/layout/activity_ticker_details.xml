@@ -11,12 +11,10 @@
         android:id="@+id/Details_ticker_label"
         android:layout_width="339dp"
         android:layout_height="105dp"
-        android:layout_marginTop="44dp"
         android:fontFamily="sans-serif-black"
         android:textAlignment="center"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
@@ -25,66 +23,78 @@
         android:id="@+id/Details_ticker_only"
         android:layout_width="184dp"
         android:layout_height="23dp"
-        android:layout_marginTop="4dp"
         android:textAlignment="center"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Details_ticker_label"
         tools:ignore="MissingConstraints" />
 
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/price_chart"
+        android:layout_width="379dp"
+        android:layout_height="155dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Details_ticker_only">
+
+    </com.github.mikephil.charting.charts.LineChart>
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="73dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.106"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/price_chart" />
+
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/revenues_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="16dp"
         android:text="@string/revenues"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.245"
+        app:layout_constraintHorizontal_bias="0.108"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintTop_toBottomOf="@+id/space" />
 
     <TextView
         android:id="@+id/Details_Revenues"
         android:layout_width="118dp"
         android:layout_height="22dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.116"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="379dp" />
+        app:layout_constraintHorizontal_bias="0.075"
+        app:layout_constraintStart_toEndOf="@+id/revenues_label"
+        app:layout_constraintTop_toBottomOf="@+id/space"
+        tools:ignore="MissingConstraints" />
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/price_chart"
-        android:layout_width="335dp"
-        android:layout_height="159dp"
-        android:layout_marginTop="16dp"
+    <TextView
+        android:id="@+id/ebitda_label"
+        android:layout_width="52dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/ebitda"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.105"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Details_ticker_only" />
+        app:layout_constraintTop_toBottomOf="@+id/revenues_label" />
 
     <TextView
         android:id="@+id/Details_EBITDA"
         android:layout_width="122dp"
         android:layout_height="20dp"
+        android:layout_marginTop="4dp"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.125"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="415dp" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="52dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="12dp"
-        android:text="@string/ebitda"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintHorizontal_bias="0.155"
+        app:layout_constraintStart_toEndOf="@+id/ebitda_label"
+        app:layout_constraintTop_toBottomOf="@+id/Details_Revenues"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
