@@ -5,4 +5,6 @@
     <string name="confirm">CONFIRM</string>
     <string name="next">NEXT</string>
     <string name="how_old_are_you">How old are you?</string>
+    <string name="ebitda">EBITDA</string>
+    <string name="revenues">Revenues</string>
 </resources>
