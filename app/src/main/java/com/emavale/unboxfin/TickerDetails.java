@@ -5,20 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
-import android.icu.text.UnicodeSet;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.mikephil.charting.charts.LineChart;
@@ -31,24 +25,43 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class TickerDetails extends AppCompatActivity {
 
     public TextView tickerlabel;
-    public TextView tickeronly;
     public String ticker;
     public TextView details_sales;
     public TextView details_ebitda;
+
+    ///Trading Multipliers//////
+
+     /*
+            (+) Cash & Cash-Equivalents:
+            (+) Equity Investments:
+            (+) Other Non-Core Assets, Net:
+            (+) Net Operating Losses:
+            (-) Total Debt:
+            (-) Preferred Stock:
+            (-) Noncontrolling Interests:
+            (-) Unfunded Pension Obligations:
+            (-) Capital Leases:
+            (-) Restructuring & Other Liabilities:
+
+      */
+    ///////////////////////
+
+
     public String revenues;
     public String ebitda;
+    public Integer marketcap_ev;
+
+
     public LineChart price_chart;
     public List<Entry> prices_entries;
     public JSONArray timestamps;
@@ -63,7 +76,6 @@ public class TickerDetails extends AppCompatActivity {
         
         String selected_ticker = getIntent().getStringExtra("TICKER_SELECTED");
         tickerlabel = findViewById(R.id.Details_ticker_label);
-        tickeronly = findViewById(R.id.Details_ticker_only);
         details_sales = findViewById(R.id.Details_Revenues);
         details_ebitda = findViewById(R.id.Details_EBITDA);
 
@@ -72,7 +84,6 @@ public class TickerDetails extends AppCompatActivity {
 
         ticker = selected_ticker.substring(0, selected_ticker.indexOf("-") - 1);
         tickerlabel.setText(selected_ticker);
-        tickeronly.setText(ticker);
         YahooTickerData(ticker);
 
 
@@ -97,6 +108,7 @@ public class TickerDetails extends AppCompatActivity {
                         JSONObject response_obj = new JSONObject(response);
                         revenues = response_obj.getJSONObject("financialData").getJSONObject("totalRevenue").getString("fmt");
                         ebitda = response_obj.getJSONObject("financialData").getJSONObject("ebitda").getString("fmt");
+
                         details_sales.setText(revenues);
                         details_ebitda.setText(ebitda);
                     } catch (JSONException e) {
@@ -122,7 +134,55 @@ public class TickerDetails extends AppCompatActivity {
     };
     //End of YahooTickerData
 
+    private void YahooTickerFinancials(String ticker){
 
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?symbol=" + ticker + "&region=US";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    try {
+                        JSONObject response_obj = new JSONObject(response);
+                        marketcap_ev = response_obj
+                                        .getJSONObject("balanceSheetHistory")
+                                        .getJSONArray("balanceSheetStatements")
+                                        .getJSONObject(0)
+                                        .getJSONObject("cash")
+                                        .getInt("raw")
+                                        +
+                                        response_obj
+                                        .getJSONObject("balanceSheetHistory")
+                                        .getJSONArray("balanceSheetStatements")
+                                        .getJSONObject(0)
+                                        .getJSONObject("shortTermInvestments")
+                                        .getInt("raw")
+                                        +
+                                response_obj
+                                        .getJSONObject("balanceSheetHistory")
+                                        .getJSONArray("balanceSheetStatements")
+                                        .getJSONObject(0)
+                                        .getJSONObject("commonStock")
+                                        .getInt("raw");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }, error -> Log.d("YahooFinancials","YahooTickerFinancials failed")
+            ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("x-rapidapi-key", "e0be66ae65mshf978aea8cd09be1p152050jsnfc62bd35e202");
+                headers.put("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com");
+                headers.put("useQueryString", "true");
+                return headers;
+            }
+
+        };
+        queue.add(stringRequest);
+
+    };
+    //End of YahooTickerData
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
