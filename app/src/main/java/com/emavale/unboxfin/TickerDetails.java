@@ -98,6 +98,7 @@ public class TickerDetails extends AppCompatActivity {
     public JSONArray timestamps;
     public JSONArray close_prices;
 
+    ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,32 +195,32 @@ public class TickerDetails extends AppCompatActivity {
                             cardview.setCardBackgroundColor(ContextCompat.getColor(this,cards_background));
                             cardview.setId(i);
                             //Image thumb news
-                            ImageView news_thumb_view = new ImageView(TickerDetails.this);
+                            ImageView news_thumb_view = new ImageView(this);
 
-                            //LinearLayout.LayoutParams news_thumb_params = new LinearLayout.LayoutParams(280,130);
-                            //news_thumb_view.setLayoutParams(news_thumb_params);
-                            //ViewGroup.MarginLayoutParams thumbMarginParams = (ViewGroup.MarginLayoutParams) news_thumb_view.getLayoutParams();
-                            //thumbMarginParams.setMargins(0, 2, 2, 0);
-                            Glide.with(TickerDetails.this).load(news_url).into(news_thumb_view);
+                            LinearLayout.LayoutParams news_thumb_params = new LinearLayout.LayoutParams(280,130);
+                            news_thumb_view.setLayoutParams(news_thumb_params);
+                            ViewGroup.MarginLayoutParams thumbMarginParams = (ViewGroup.MarginLayoutParams) news_thumb_view.getLayoutParams();
+                            thumbMarginParams.setMargins(0, 2, 2, 0);
+                            Glide.with(TickerDetails.this).load(news_thumb).into(news_thumb_view);
 
                             //Text news
                             TextView news_text_view = new TextView(this);
                             news_text_view.setText(news_text);
-                            //LinearLayout.LayoutParams news_text_params = new LinearLayout.LayoutParams(2000,100);
-                            //news_text_view.setLayoutParams(news_thumb_params);
-                            //ViewGroup.MarginLayoutParams textMarginparams = (ViewGroup.MarginLayoutParams) news_text_view.getLayoutParams();
-                            //textMarginparams.setMargins(2, 2, 2, 0);
+                            LinearLayout.LayoutParams news_text_params = new LinearLayout.LayoutParams(500,100);
+                            news_text_view.setLayoutParams(news_text_params);
+                            ViewGroup.MarginLayoutParams textMarginparams = (ViewGroup.MarginLayoutParams) news_text_view.getLayoutParams();
+                            textMarginparams.setMargins(0, 2, 0, 0);
 
 
-
-
+                            LinearLayout in_card_layout = new LinearLayout(this);
+                            in_card_layout.setOrientation(LinearLayout.HORIZONTAL);
 
 
                             //add views
                             news_linearlayout.addView(cardview);
-                            cardview.addView(news_thumb_view);
-
-                            cardview.addView(news_text_view);
+                            cardview.addView(in_card_layout);
+                            in_card_layout.addView(news_thumb_view);
+                            in_card_layout.addView(news_text_view);
 
 
                         }
@@ -378,30 +379,7 @@ public class TickerDetails extends AppCompatActivity {
         return s.format(new Date(cal.getTimeInMillis()));
     };
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
 
     public String asci_decoder(String str){
         str = str.replace("&#039;", "'");
