@@ -2,12 +2,22 @@ package com.emavale.unboxfin;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -15,16 +25,24 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
+import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import java.io.InputStream;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,12 +50,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+import static com.emavale.unboxfin.R.color.cards_background;
+
 public class TickerDetails extends AppCompatActivity {
 
     public TextView tickerlabel;
     public String ticker;
     public TextView details_sales;
     public TextView details_ebitda;
+
+    //News variables
+    public String news_thumb;
+    public String news_text;
+    public String news_url;
+    public JSONArray news_arr;
+    public ScrollView news_scrollview;
+    public LinearLayout news_linearlayout;
+    public CardView cardview;
+    //End of News variables
 
     ///Trading Multipliers//////
 
@@ -68,7 +99,6 @@ public class TickerDetails extends AppCompatActivity {
     public JSONArray close_prices;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +109,9 @@ public class TickerDetails extends AppCompatActivity {
         details_sales = findViewById(R.id.Details_Revenues);
         details_ebitda = findViewById(R.id.Details_EBITDA);
 
+        //setup News layout
+        news_scrollview = findViewById(R.id.newsscrollview);
+        news_linearlayout = findViewById(R.id.newsLinearLayout);
 
 
 
@@ -90,7 +123,7 @@ public class TickerDetails extends AppCompatActivity {
         //Price CHART
         price_chart = findViewById(R.id.price_chart);
         UpdatePriceChart(ticker,"1d","1y"); //update price chart
-
+        YahooTickerNews(ticker);
 
 
 
@@ -133,6 +166,93 @@ public class TickerDetails extends AppCompatActivity {
 
     };
     //End of YahooTickerData
+
+    private void YahooTickerNews(String ticker){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "https://yahoo-finance-low-latency.p.rapidapi.com/v2/finance/news?symbols=" + ticker;
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    try {
+                        JSONObject response_obj = new JSONObject(response);
+                        news_arr = response_obj.getJSONObject("Content").getJSONArray("result");
+                        ArrayList<String> url_arr = new ArrayList<String>();
+                        for (int i=0; i<Math.min(11,news_arr.length());i++){
+                            news_thumb = news_arr.getJSONObject(i).getString("thumbnail");
+                            Log.d("thumbnail: ", news_thumb);
+                            news_text = asci_decoder(news_arr.getJSONObject(i).getString("title"));
+                            news_url = news_arr.getJSONObject(i).getString("url");
+                            url_arr.add(news_url);
+                            //Card News
+                            cardview = new CardView(this);
+                            LinearLayout.LayoutParams card_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,150);
+                            cardview.setLayoutParams(card_params);
+                            cardview.setRadius(15);
+                            ViewGroup.MarginLayoutParams cardViewMarginParams = (ViewGroup.MarginLayoutParams) cardview.getLayoutParams();
+                            cardViewMarginParams.setMargins(0, 2, 0, 0);
+                            cardview.requestLayout();
+                            cardview.setCardBackgroundColor(ContextCompat.getColor(this,cards_background));
+                            cardview.setId(i);
+                            //Image thumb news
+                            ImageView news_thumb_view = new ImageView(TickerDetails.this);
+
+                            //LinearLayout.LayoutParams news_thumb_params = new LinearLayout.LayoutParams(280,130);
+                            //news_thumb_view.setLayoutParams(news_thumb_params);
+                            //ViewGroup.MarginLayoutParams thumbMarginParams = (ViewGroup.MarginLayoutParams) news_thumb_view.getLayoutParams();
+                            //thumbMarginParams.setMargins(0, 2, 2, 0);
+                            Glide.with(TickerDetails.this).load(news_url).into(news_thumb_view);
+
+                            //Text news
+                            TextView news_text_view = new TextView(this);
+                            news_text_view.setText(news_text);
+                            //LinearLayout.LayoutParams news_text_params = new LinearLayout.LayoutParams(2000,100);
+                            //news_text_view.setLayoutParams(news_thumb_params);
+                            //ViewGroup.MarginLayoutParams textMarginparams = (ViewGroup.MarginLayoutParams) news_text_view.getLayoutParams();
+                            //textMarginparams.setMargins(2, 2, 2, 0);
+
+
+
+
+
+
+                            //add views
+                            news_linearlayout.addView(cardview);
+                            cardview.addView(news_thumb_view);
+
+                            cardview.addView(news_text_view);
+
+
+                        }
+                        cardview.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Uri uri = Uri.parse(url_arr.get(v.getId()));
+                                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                startActivity(intent);
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }, error -> details_sales.setText("That didn't work!")
+
+
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("x-rapidapi-key", "e0be66ae65mshf978aea8cd09be1p152050jsnfc62bd35e202");
+                headers.put("x-rapidapi-host", "yahoo-finance-low-latency.p.rapidapi.com");
+                return headers;
+            }
+
+        };
+        queue.add(stringRequest);
+
+    };
+    //End of YahooTickerNews
 
     private void YahooTickerFinancials(String ticker){
 
@@ -185,7 +305,6 @@ public class TickerDetails extends AppCompatActivity {
     //End of YahooTickerData
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void UpdatePriceChart(String ticker, String interval, String range) {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-chart?interval="+interval+"&symbol="+ticker+"&range="+range+"&region=US";
@@ -258,6 +377,37 @@ public class TickerDetails extends AppCompatActivity {
         cal.add(Calendar.DAY_OF_YEAR, days);
         return s.format(new Date(cal.getTimeInMillis()));
     };
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+    public String asci_decoder(String str){
+        str = str.replace("&#039;", "'");
+        str = str.replace("&#39;", "'");
+        return str;
+    }
 
 };
 //End of Class
