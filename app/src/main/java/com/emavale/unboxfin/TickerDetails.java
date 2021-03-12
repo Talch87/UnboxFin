@@ -3,15 +3,16 @@ package com.emavale.unboxfin;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,27 +28,28 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import java.io.InputStream;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -59,6 +61,7 @@ public class TickerDetails extends AppCompatActivity {
     public String ticker;
     public TextView details_sales;
     public TextView details_ebitda;
+    public ScrollView generalscrollview;
 
     //News variables
     public String news_thumb;
@@ -68,6 +71,7 @@ public class TickerDetails extends AppCompatActivity {
     public ScrollView news_scrollview;
     public LinearLayout news_linearlayout;
     public CardView cardview;
+    public CardView cardNews;
     //End of News variables
 
     ///Trading Multipliers//////
@@ -95,6 +99,7 @@ public class TickerDetails extends AppCompatActivity {
 
     public LineChart price_chart;
     public List<Entry> prices_entries;
+    public ArrayList<String> xLabel = new ArrayList<>();
     public JSONArray timestamps;
     public JSONArray close_prices;
 
@@ -110,6 +115,9 @@ public class TickerDetails extends AppCompatActivity {
         details_sales = findViewById(R.id.Details_Revenues);
         details_ebitda = findViewById(R.id.Details_EBITDA);
 
+        cardNews = findViewById(R.id.cardNews);
+        generalscrollview = findViewById(R.id.generalscrollview);
+
         //setup News layout
         news_scrollview = findViewById(R.id.newsscrollview);
         news_linearlayout = findViewById(R.id.newsLinearLayout);
@@ -123,6 +131,7 @@ public class TickerDetails extends AppCompatActivity {
 
         //Price CHART
         price_chart = findViewById(R.id.price_chart);
+        price_chart.setTouchEnabled(true);
         UpdatePriceChart(ticker,"1d","1y"); //update price chart
         YahooTickerNews(ticker);
 
@@ -178,15 +187,14 @@ public class TickerDetails extends AppCompatActivity {
                         JSONObject response_obj = new JSONObject(response);
                         news_arr = response_obj.getJSONObject("Content").getJSONArray("result");
                         ArrayList<String> url_arr = new ArrayList<String>();
-                        for (int i=0; i<Math.min(11,news_arr.length());i++){
+                        for (int i=0; i<Math.min(5,news_arr.length());i++){
                             news_thumb = news_arr.getJSONObject(i).getString("thumbnail");
-                            Log.d("thumbnail: ", news_thumb);
                             news_text = asci_decoder(news_arr.getJSONObject(i).getString("title"));
                             news_url = news_arr.getJSONObject(i).getString("url");
                             url_arr.add(news_url);
                             //Card News
                             cardview = new CardView(this);
-                            LinearLayout.LayoutParams card_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,150);
+                            LinearLayout.LayoutParams card_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,200);
                             cardview.setLayoutParams(card_params);
                             cardview.setRadius(15);
                             ViewGroup.MarginLayoutParams cardViewMarginParams = (ViewGroup.MarginLayoutParams) cardview.getLayoutParams();
@@ -197,7 +205,7 @@ public class TickerDetails extends AppCompatActivity {
                             //Image thumb news
                             ImageView news_thumb_view = new ImageView(this);
 
-                            LinearLayout.LayoutParams news_thumb_params = new LinearLayout.LayoutParams(280,130);
+                            LinearLayout.LayoutParams news_thumb_params = new LinearLayout.LayoutParams(280,180);
                             news_thumb_view.setLayoutParams(news_thumb_params);
                             ViewGroup.MarginLayoutParams thumbMarginParams = (ViewGroup.MarginLayoutParams) news_thumb_view.getLayoutParams();
                             thumbMarginParams.setMargins(0, 2, 2, 0);
@@ -206,10 +214,10 @@ public class TickerDetails extends AppCompatActivity {
                             //Text news
                             TextView news_text_view = new TextView(this);
                             news_text_view.setText(news_text);
-                            LinearLayout.LayoutParams news_text_params = new LinearLayout.LayoutParams(500,100);
+                            LinearLayout.LayoutParams news_text_params = new LinearLayout.LayoutParams(600,180);
                             news_text_view.setLayoutParams(news_text_params);
                             ViewGroup.MarginLayoutParams textMarginparams = (ViewGroup.MarginLayoutParams) news_text_view.getLayoutParams();
-                            textMarginparams.setMargins(0, 2, 0, 0);
+                            textMarginparams.setMargins(10, 2, 0, 0);
 
 
                             LinearLayout in_card_layout = new LinearLayout(this);
@@ -221,6 +229,12 @@ public class TickerDetails extends AppCompatActivity {
                             cardview.addView(in_card_layout);
                             in_card_layout.addView(news_thumb_view);
                             in_card_layout.addView(news_text_view);
+
+
+
+
+
+
 
 
                         }
@@ -334,6 +348,8 @@ public class TickerDetails extends AppCompatActivity {
                             for (int i=0; i<timestamps.length(); i++) {
 
                                 try {
+                                    xLabel.add(getDate(Long.parseLong(timestamps.getString(i))).toString());
+
                                     prices_entries.add(new Entry(i+1, (float) close_prices.getDouble(i)));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -344,9 +360,32 @@ public class TickerDetails extends AppCompatActivity {
                             LineDataSet dataSet = new LineDataSet(prices_entries, "Price");
                             dataSet.setColor(Color.RED);
                             dataSet.setValueTextColor(Color.BLACK);
+                            dataSet.setDrawCircles(false);
                             LineData lineData = new LineData(dataSet);
-                            Log.d("linedata:", dataSet.toString());
+                            lineData.setDrawValues(false);
+                            lineData.setHighlightEnabled(true);
+
+
+                            XAxis xAxis = price_chart.getXAxis();
+                            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                            xAxis.setDrawGridLines(false);
+                            xAxis.setValueFormatter(new ValueFormatter() {
+                                                        @Override
+                                                        public String getFormattedValue(float value) {
+                                                            return xLabel.get((int)value);
+                                                        }
+                                                    });
+
+
                             price_chart.setData(lineData);
+                            price_chart.getDescription().setEnabled(false);
+                            price_chart.setElevation(2f);
+                            price_chart.animateX(1000);
+                            price_chart.setDrawMarkers(false);
+                            price_chart.setDrawGridBackground(false);
+
+                            Legend legend = price_chart.getLegend();
+                            legend.setEnabled(false);
                             price_chart.invalidate();
 
                         } catch (JSONException e) {
@@ -385,6 +424,13 @@ public class TickerDetails extends AppCompatActivity {
         str = str.replace("&#039;", "'");
         str = str.replace("&#39;", "'");
         return str;
+    };
+
+    private String getDate(long time) {
+        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+        cal.setTimeInMillis(time * 1000);
+        String date = DateFormat.format("dd-MM-yyyy", cal).toString();
+        return date;
     }
 
 };

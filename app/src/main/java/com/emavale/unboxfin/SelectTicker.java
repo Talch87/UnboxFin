@@ -13,7 +13,7 @@ import android.widget.Button;
 public class SelectTicker extends AppCompatActivity {
     public String selected_ticker;
     public Button confirm_btn;
-
+    public Button reset_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,7 @@ public class SelectTicker extends AppCompatActivity {
         setContentView(R.layout.activity_select_ticker);
 
         confirm_btn =  findViewById(R.id.ticker_btn_confirm);
+        reset_btn =  findViewById(R.id.ticker_btn_reset);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_dropdown_item_1line, COUNTRIES);
@@ -42,6 +43,13 @@ public class SelectTicker extends AppCompatActivity {
                 Intent intent = new Intent(getBaseContext(), TickerDetails.class);
                 intent.putExtra("TICKER_SELECTED", selected_ticker);
                 startActivity(intent);
+            }
+        });
+
+        reset_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ticker_selector.setText("");
             }
         });
 
