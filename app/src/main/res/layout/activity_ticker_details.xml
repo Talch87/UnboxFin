@@ -23,135 +23,144 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-    <TextView
-        android:id="@+id/Details_ticker_label"
-        android:layout_width="339dp"
-        android:layout_height="71dp"
-        android:fontFamily="sans-serif-condensed"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.024"
-        />
-
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/price_chart"
-        android:layout_width="390dp"
-        android:layout_height="171dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/colorbackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.476"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Details_ticker_label"
-        app:layout_constraintVertical_bias="0.0">
-
-    </com.github.mikephil.charting.charts.LineChart>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardFinancials"
-        android:layout_width="380dp"
-        android:layout_height="234dp"
-        app:cardBackgroundColor="@color/cards_background"
-        app:cardCornerRadius="15dp"
-        android:layout_marginTop="55dp"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/price_chart"
-        app:layout_constraintVertical_bias="0.073">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="10dp"
-            >
 
             <TextView
-                android:id="@+id/revenues_label"
-                android:layout_width="65dp"
-                android:layout_height="17dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginTop="2dp"
-                android:text="@string/revenues" />
+                android:id="@+id/Details_ticker_label"
+                android:layout_width="379dp"
+                android:layout_height="71dp"
+                android:fontFamily="sans-serif-condensed"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.024" />
 
-            <TextView
-                android:id="@+id/Details_Revenues"
-                android:layout_width="113dp"
-                android:layout_height="17dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginTop="2dp" />
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/price_chart"
+                android:layout_width="378dp"
+                android:layout_height="171dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/colorbackground"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.476"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/Details_ticker_label"
+                app:layout_constraintVertical_bias="0.0">
 
-            <TextView
-                android:id="@+id/ebitda_label"
-                android:layout_width="60dp"
-                android:layout_height="17dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginTop="2dp"
-                android:text="@string/ebitda" />
+            </com.github.mikephil.charting.charts.LineChart>
 
-            <TextView
-                android:id="@+id/Details_EBITDA"
-                android:layout_width="110dp"
-                android:layout_height="17dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardFinancials"
+                android:layout_width="match_parent"
+                android:layout_height="234dp"
+                android:layout_marginTop="55dp"
+                android:padding="10dp"
+                app:cardBackgroundColor="@color/cards_background"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.493"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/price_chart"
+                app:layout_constraintVertical_bias="0.073">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/financials_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp"
+                        android:text="Financials"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/revenues_label"
+                        android:layout_width="65dp"
+                        android:layout_height="17dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/revenues" />
+
+                    <TextView
+                        android:id="@+id/Details_Revenues"
+                        android:layout_width="113dp"
+                        android:layout_height="17dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp" />
+
+                    <TextView
+                        android:id="@+id/ebitda_label"
+                        android:layout_width="60dp"
+                        android:layout_height="17dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/ebitda" />
+
+                    <TextView
+                        android:id="@+id/Details_EBITDA"
+                        android:layout_width="110dp"
+                        android:layout_height="17dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
 
 
-    </androidx.cardview.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardNews"
-        android:layout_width="380dp"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/cards_background"
-        app:cardCornerRadius="15dp"
-        android:layout_marginTop="55px"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.47"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardFinancials"
-        app:layout_constraintVertical_bias="0.16000003"
-        android:padding="2dp">
-
-
-        <TextView
-            android:id="@+id/newstitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:backgroundTint="#FFFFFF"
-            android:gravity="center"
-            android:text="NEWS"
-            android:textAlignment="center" />
-
-        <ScrollView
-            android:id="@+id/newsscrollview"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp">
-
-            <LinearLayout
-                android:id="@+id/newsLinearLayout"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardNews"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="20dp"
+                android:padding="2dp"
+                app:cardBackgroundColor="@color/cards_background"
+                app:cardCornerRadius="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.47"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardFinancials"
+                app:layout_constraintVertical_bias="0.16000003">
 
 
-            </LinearLayout>
-        </ScrollView>
+                <TextView
+                    android:id="@+id/newstitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:backgroundTint="#FFFFFF"
+                    android:gravity="center"
+                    android:text="NEWS"
+                    android:textAlignment="center" />
+
+                <ScrollView
+                    android:id="@+id/newsscrollview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp">
+
+                    <LinearLayout
+                        android:id="@+id/newsLinearLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
 
-    </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+                </ScrollView>
+
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
     </ScrollView>
